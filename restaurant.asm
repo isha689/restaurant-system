@@ -1,4 +1,4 @@
-                      .model small
+                                               .model small
 .stack 100h
 .data
 
@@ -10,8 +10,8 @@
      
     m4 dw 10,13,10,13, "Press <1> : Have-In  $"
     m9 dw 10,13,10,13, "Press <2> : Take-Away  $"
-    m5 dw 10,13,10,13, "Enter quantity: $" 
-    m6 dw 10,13,10,13, "Total price: $"
+    m5 dw 10,13,10,13, "Enter quantity:  $" 
+    m6 dw 10,13,10,13, "Total price:  $"
     m7 dw 10,13,10,13, "      *****THANK YOU*****     $"
     m10 dw 10,13,10,13, "                                                                    $"
     m13 dw 10,13,10,13, "To Re-odrer : Press <1>$",
@@ -19,9 +19,18 @@
     
     m11 dw 10,13,10,13, "Order is Packed ! $"
     m15 dw 10,13,10,13, "What would you prefer : Have-In OR Take-Away ? $"    
-    m16 dw 10,13,10,13, "Packing Charges : 30/-$"
-    ;q dw 0    
-    r dw 0
+    m16 dw 10,13,10,13, "Packing Charges : 30/-$"    
+    
+    m51 dw 10,13,10,13, "Have a discount coupon? If yes press 1, else press 2.  $"    
+    m52 dw 10,13,10,13, "You have discount coupon of : $"
+    m55 dw 10,13,10,13, "                              1. 30 % $"
+    m56 dw 10,13,10,13, "                              2. 50 % $"
+    m57 dw 10,13,10,13, "                              3. 70 %   $"
+    m53 dw 10,13,10,13, "You have been offered discount of Rupees:  $"   
+    m54 dw 10,13,10,13, "Your final Price after discount is:  $"   
+    
+            
+    r dw 0                                                     
     v db 0
     s dw 0
     rprice dw 100
@@ -30,9 +39,13 @@
     
     
     charges dw 30    
-    count dw 0
+    count dw 0      
     
-    ;var1 db 100 dup('$')
+    coupond1 dw 30 
+    coupond2 dw 50
+    coupond3 dw 70   
+    
+    perc dw 100
     
 .code
     main proc
@@ -206,7 +219,20 @@
             
             
         totalprice:
-         
+                    
+            mov ah,9
+            Lea dx,m51
+            int 21h 
+            
+            
+            mov ah,1
+            int 21h
+            
+            cmp al,31h
+            je couponY
+            
+                
+                    
             mov ah,9
             Lea dx,m6
             int 21h 
@@ -219,8 +245,139 @@
             
             jmp Final
              
-          
-                     
+         
+         
+         couponY:
+         
+            mov ah,9
+            Lea dx,m52
+            int 21h 
+            
+            mov ah,9
+            Lea dx,m55
+            int 21h
+            
+            mov ah,9
+            Lea dx,m56
+            int 21h
+            
+            mov ah,9
+            Lea dx,m57
+            int 21h
+            
+            mov ah,1
+            int 21h
+            
+            cmp al,31h
+            je coupon1
+            
+            cmp al,32h
+            je coupon2 
+            
+            cmp al,33h
+            je coupon3
+         
+        
+                         
+                               
+        coupon1:
+        
+            xor ax,ax
+            mov ax,bx
+            
+            mov cx,ax
+            mul coupond1
+           
+            div perc
+            
+            mov bx,ax
+            
+            mov ah,9
+            Lea dx,m53
+            int 21h
+            
+            xor ax,ax
+            mov ax,bx
+            call outdec
+            
+            
+            mov ah,9
+            Lea dx,m54 
+            int 21h 
+            
+            mov ax,cx
+            sub ax,bx
+            call outdec
+            
+            jmp Final 
+            
+            
+               
+            
+        coupon2:
+        
+            xor ax,ax
+            mov ax,bx
+            
+            mov cx,ax
+            mul coupond2
+           
+            div perc
+            
+            mov bx,ax
+            
+            mov ah,9
+            Lea dx,m53
+            int 21h
+            
+            xor ax,ax
+            mov ax,bx
+            call outdec
+            
+            
+            mov ah,9
+            Lea dx,m54 
+            int 21h 
+            
+            mov ax,cx
+            sub ax,bx
+            call outdec
+            
+            jmp Final 
+        
+        
+        coupon3:
+        
+            xor ax,ax
+            mov ax,bx
+            
+            mov cx,ax
+            mul coupond3
+           
+            div perc
+            
+            mov bx,ax
+            
+            mov ah,9
+            Lea dx,m53
+            int 21h
+            
+            xor ax,ax
+            mov ax,bx
+            call outdec
+            
+            
+            mov ah,9
+            Lea dx,m54 
+            int 21h 
+            
+            mov ax,cx
+            sub ax,bx
+            call outdec
+            
+            jmp Final 
+                    
+                       
                      
         pack:  
         
